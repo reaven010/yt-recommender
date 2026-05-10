@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+crewai
+crewai[tools]
+langchain-google-genai
+google-api-python-client
+youtube-transcript-api
+python-dotenv
+pydantic
+google-generativeai
