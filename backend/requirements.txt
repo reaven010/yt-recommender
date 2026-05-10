@@ -1,8 +1,11 @@
 fastapi
 uvicorn[standard]
 crewai
+langchain-google-genai
 google-api-python-client
 youtube-transcript-api
 python-dotenv
 pydantic
 google-generativeai
+yt-dlp
+youtube-search-python
