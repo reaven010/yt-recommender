@@ -80,4 +80,4 @@ Visit `http://localhost:3000` to start exploring!
 - Environment Variable: `NEXT_PUBLIC_API_URL` (Point to your deployed backend)
 
 ---
-Built with ❤️ by [Your Name/GitHub]
+Built with ❤️ by Reaven010
