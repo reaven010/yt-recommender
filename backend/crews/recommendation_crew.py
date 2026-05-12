@@ -46,7 +46,7 @@ class RecommendationCrew:
             agents=[search_agent, transcript_agent, analysis_agent, comparison_agent],
             tasks=[search_task, transcript_task, analysis_task, comparison_task],
             process=Process.sequential,
-            verbose=True
+            verbose=False # Turn off to prevent key leakage in logs
         )
 
         # Run process
