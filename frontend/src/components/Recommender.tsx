@@ -18,7 +18,10 @@ export default function Recommender() {
     setResult(null);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
+      let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001";
+      // Remove trailing slash if present to prevent double-slash issues
+      baseUrl = baseUrl.replace(/\/$/, "");
+      
       const response = await fetch(`${baseUrl}/api/recommendations`, {
         method: "POST",
         headers: {
