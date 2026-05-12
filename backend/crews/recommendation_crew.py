@@ -24,7 +24,7 @@ class RecommendationCrew:
             raise ValueError("GOOGLE_API_KEY is not set correctly in .env")
             
         self.llm = LLM(
-            model="gemini/gemini-flash-latest",
+            model="gemini/gemini-2.5-flash-lite",
             api_key=api_key
         )
         

@@ -123,7 +123,7 @@ export default function Recommender() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
               {result.steps?.map((step: any, idx: number) => (
-                <div key={idx} className="flex flex-col bg-neutral-900/60 backdrop-blur-sm border border-neutral-800 rounded-2xl p-6 hover:border-neutral-600 transition-all duration-300 h-[450px] shadow-xl hover:shadow-2xl hover:-translate-y-1">
+                <div key={`step-${idx}-${step.agent_name}`} className="flex flex-col bg-neutral-900/60 backdrop-blur-sm border border-neutral-800 rounded-2xl p-6 hover:border-neutral-600 transition-all duration-300 h-[450px] shadow-xl hover:shadow-2xl hover:-translate-y-1">
                   <div className="flex items-center gap-3 mb-5">
                     <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-black shadow-lg shadow-blue-500/30">
                       {idx + 1}
@@ -162,9 +162,9 @@ export default function Recommender() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {result.recommendations?.map((rec: any, idx: number) => (
+              {result.recommendations?.map((rec: any) => (
                 <a 
-                  key={idx}
+                  key={rec.video_id || Math.random()}
                   href={`https://youtube.com/watch?v=${rec.video_id}`}
                   target="_blank"
                   rel="noopener noreferrer"

@@ -15,17 +15,27 @@ async def get_recommendations(request: RecommendationRequest):
         steps = []
         if hasattr(result, 'tasks_output'):
             for task_out in result.tasks_output:
+                # Ensure agent_name is a string (could be an object or string)
+                agent_val = getattr(task_out, 'agent', 'Unknown Agent')
+                agent_name = str(agent_val)
+                
                 steps.append({
-                    "agent_name": getattr(task_out, 'agent', 'Unknown Agent'),
-                    "task_description": getattr(task_out, 'description', 'Unknown Task'),
+                    "agent_name": agent_name,
+                    "task_description": str(getattr(task_out, 'description', 'Unknown Task')),
                     "output": getattr(task_out, 'raw', str(task_out))
                 })
         
         final_str = str(result)
         
         try:
-            # We try to clean up markdown JSON formatting if the LLM adds it
-            clean_result = final_str.replace("```json", "").replace("```", "").strip()
+            # More robust JSON extraction using regex
+            import re
+            json_match = re.search(r'\{.*\}', final_str, re.DOTALL)
+            if json_match:
+                clean_result = json_match.group(0)
+            else:
+                clean_result = final_str.replace("```json", "").replace("```", "").strip()
+                
             data = json.loads(clean_result)
             
             return RecommendationResponse(
@@ -34,10 +44,11 @@ async def get_recommendations(request: RecommendationRequest):
                 recommendations=data.get("recommendations", []),
                 summary=data.get("summary", "No summary provided.")
             )
-        except json.JSONDecodeError:
-            print("Failed to parse JSON:", final_str)
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"Failed to parse JSON: {e}")
+            print(f"Raw output: {final_str}")
             # Fallback if the LLM didn't return perfect JSON
-            raise HTTPException(status_code=500, detail="The AI failed to format the response correctly. Raw output: " + final_str)
+            raise HTTPException(status_code=500, detail="The AI failed to format the response correctly. Please try a different query.")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
