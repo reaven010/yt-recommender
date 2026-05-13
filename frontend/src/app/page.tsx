@@ -2,6 +2,7 @@
 
 import Recommender from "@/components/Recommender";
 import Galaxy from "@/components/Galaxy";
+import Support from "@/components/Support";
 
 export default function Home() {
   return (
@@ -20,8 +21,9 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="relative z-10 pointer-events-none min-h-screen">
-        <div className="pointer-events-auto">
+        <div className="pointer-events-auto flex flex-col gap-0">
           <Recommender />
+          <Support />
         </div>
       </div>
     </main>
