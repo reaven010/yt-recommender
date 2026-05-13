@@ -79,5 +79,9 @@ Visit `http://localhost:3000` to start exploring!
 - Build: `npm run build`
 - Environment Variable: `NEXT_PUBLIC_API_URL` (Point to your deployed backend)
 
+## 📜 Credits
+
+- **[No-as-a-Service](https://github.com/hotheadhacker/no-as-a-service)**: Special thanks to [Salman Qureshi (hotheadhacker)](https://github.com/hotheadhacker) for the satirical API used to handle system errors with style.
+
 ---
-Built with ❤️ by Reaven010
+Built with ❤️ by [Reaven010](https://github.com/Reaven010)
