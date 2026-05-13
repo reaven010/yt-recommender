@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from models.schemas import RecommendationRequest, RecommendationResponse
 from crews.recommendation_crew import RecommendationCrew
 import json
+from services.naas_service import get_no_reason
+
 
 router = APIRouter()
 
@@ -48,7 +50,10 @@ async def get_recommendations(request: RecommendationRequest):
             print(f"Failed to parse JSON: {e}")
             print(f"Raw output: {final_str}")
             # Fallback if the LLM didn't return perfect JSON
-            raise HTTPException(status_code=500, detail="The AI failed to format the response correctly. Please try a different query.")
+            no_reason = await get_no_reason()
+            raise HTTPException(status_code=500, detail=no_reason)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"Internal Error: {e}")
+        no_reason = await get_no_reason()
+        raise HTTPException(status_code=500, detail=no_reason)
