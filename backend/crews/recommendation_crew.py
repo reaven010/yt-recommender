@@ -23,17 +23,18 @@ class RecommendationCrew:
         if not api_key or api_key == "your_gemini_api_key_here":
             raise ValueError("GOOGLE_API_KEY is not set correctly in .env")
             
+        self.api_key = api_key
         self.llm = LLM(
-            model="gemini/gemini-2.5-flash-lite",
+            model="gemini/gemini-2.5-flash", # Primary, higher model
             api_key=api_key
         )
         
-    def run(self, query: str, max_results: int = 5):
+    def _create_and_run_crew(self, llm: LLM, query: str, max_results: int):
         # Create agents
-        search_agent = create_search_agent(self.llm)
-        transcript_agent = create_transcript_agent(self.llm)
-        analysis_agent = create_analysis_agent(self.llm)
-        comparison_agent = create_comparison_agent(self.llm)
+        search_agent = create_search_agent(llm)
+        transcript_agent = create_transcript_agent(llm)
+        analysis_agent = create_analysis_agent(llm)
+        comparison_agent = create_comparison_agent(llm)
 
         # Create tasks
         search_task = create_search_task(search_agent, query, max_results)
@@ -50,5 +51,18 @@ class RecommendationCrew:
         )
 
         # Run process
-        result = crew.kickoff()
-        return result
+        return crew.kickoff()
+
+    def run(self, query: str, max_results: int = 5):
+        try:
+            print("Attempting to run crew with primary model...")
+            return self._create_and_run_crew(self.llm, query, max_results)
+        except Exception as e:
+            print(f"Primary model failed with error: {e}")
+            print("Falling back to a lower model failsafe (gemini-1.5-flash)...")
+            
+            fallback_llm = LLM(
+                model="gemini/gemini-1.5-flash",
+                api_key=self.api_key
+            )
+            return self._create_and_run_crew(fallback_llm, query, max_results)
