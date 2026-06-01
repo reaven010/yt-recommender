@@ -25,7 +25,7 @@ class RecommendationCrew:
             
         self.api_key = api_key
         self.llm = LLM(
-            model="gemini/gemini-2.5-flash", # Primary, higher model
+            model="gemini/gemini-3.5-flash", # Primary, higher model
             api_key=api_key
         )
         
@@ -47,6 +47,7 @@ class RecommendationCrew:
             agents=[search_agent, transcript_agent, analysis_agent, comparison_agent],
             tasks=[search_task, transcript_task, analysis_task, comparison_task],
             process=Process.sequential,
+            max_rpm=3, # Rate-limit free tier Gemini requests to prevent 429 errors
             verbose=False # Turn off to prevent key leakage in logs
         )
 
@@ -59,10 +60,10 @@ class RecommendationCrew:
             return self._create_and_run_crew(self.llm, query, max_results)
         except Exception as e:
             print(f"Primary model failed with error: {e}")
-            print("Falling back to a lower model failsafe (gemini-1.5-flash)...")
+            print("Falling back to a lower model failsafe (gemini-2.5-flash)...")
             
             fallback_llm = LLM(
-                model="gemini/gemini-1.5-flash",
+                model="gemini/gemini-flash-lite-latest",
                 api_key=self.api_key
             )
             return self._create_and_run_crew(fallback_llm, query, max_results)

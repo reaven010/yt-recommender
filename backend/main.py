@@ -12,9 +12,22 @@ app = FastAPI(
     version="1.0.0"
 )
 
+from fastapi import HTTPException
+import traceback
+
 # Global Exception Handler for NaaS
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+        )
+    
+    # Print the stack trace to the console for debugging
+    print("Unhandled Exception in API:")
+    traceback.print_exc()
+    
     no_reason = await get_no_reason()
     return JSONResponse(
         status_code=500,

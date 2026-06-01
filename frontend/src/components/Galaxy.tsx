@@ -171,6 +171,25 @@ void main() {
 }
 `;
 
+interface GalaxyProps {
+  focal?: number[];
+  rotation?: number[];
+  starSpeed?: number;
+  density?: number;
+  hueShift?: number;
+  disableAnimation?: boolean;
+  speed?: number;
+  mouseInteraction?: boolean;
+  glowIntensity?: number;
+  saturation?: number;
+  mouseRepulsion?: boolean;
+  repulsionStrength?: number;
+  twinkleIntensity?: number;
+  rotationSpeed?: number;
+  autoCenterRepulsion?: number;
+  transparent?: boolean;
+}
+
 export default function Galaxy({
   focal = [0.5, 0.5],
   rotation = [1.0, 0.0],
@@ -189,7 +208,7 @@ export default function Galaxy({
   autoCenterRepulsion = 0,
   transparent = true,
   ...rest
-}: any) {
+}: GalaxyProps) {
   const ctnDom = useRef<HTMLDivElement>(null);
   const targetMousePos = useRef({ x: 0.5, y: 0.5 });
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
@@ -213,25 +232,8 @@ export default function Galaxy({
       gl.clearColor(0, 0, 0, 1);
     }
 
-    let program: any;
-
-    function resize() {
-      const scale = 1;
-      if (!ctn) return;
-      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
-      if (program) {
-        program.uniforms.uResolution.value = new Color(
-          gl.canvas.width,
-          gl.canvas.height,
-          gl.canvas.width / gl.canvas.height
-        );
-      }
-    }
-    window.addEventListener('resize', resize, false);
-    resize();
-
     const geometry = new Triangle(gl);
-    program = new Program(gl, {
+    const program = new Program(gl, {
       vertex: vertexShader,
       fragment: fragmentShader,
       uniforms: {
@@ -260,10 +262,23 @@ export default function Galaxy({
       }
     });
 
+    function resize() {
+      const scale = 1;
+      if (!ctn) return;
+      renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
+      program.uniforms.uResolution.value = new Color(
+        gl.canvas.width,
+        gl.canvas.height,
+        gl.canvas.width / gl.canvas.height
+      );
+    }
+    window.addEventListener('resize', resize, false);
+    resize();
+
     const mesh = new Mesh(gl, { geometry, program });
     let animateId: number;
 
-    function update(t: any) {
+    function update(t: number) {
       animateId = requestAnimationFrame(update);
       if (!disableAnimation) {
         program.uniforms.uTime.value = t * 0.001;
@@ -285,7 +300,7 @@ export default function Galaxy({
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
-    function handleMouseMove(e: any) {
+    function handleMouseMove(e: MouseEvent) {
       const rect = ctn.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = 1.0 - (e.clientY - rect.top) / rect.height;
@@ -298,16 +313,16 @@ export default function Galaxy({
     }
 
     if (mouseInteraction) {
-      ctn.addEventListener('mousemove', handleMouseMove);
-      ctn.addEventListener('mouseleave', handleMouseLeave);
+      window.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseleave', handleMouseLeave);
     }
 
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener('resize', resize);
       if (mouseInteraction) {
-        ctn.removeEventListener('mousemove', handleMouseMove);
-        ctn.removeEventListener('mouseleave', handleMouseLeave);
+        window.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseleave', handleMouseLeave);
       }
       ctn.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();

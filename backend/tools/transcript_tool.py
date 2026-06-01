@@ -13,7 +13,7 @@ class TranscriptTool(BaseTool):
 
     def _run(self, video_id: str) -> str:
         try:
-            transcript_list = YouTubeTranscriptApi.get_transcript(video_id, languages=['en'])
+            transcript_list = YouTubeTranscriptApi().fetch(video_id, languages=['en'])
             # Combine text and limit to a reasonable length to avoid token limits
             full_text = " ".join([t['text'] for t in transcript_list])
             # Return first 3000 characters to keep it manageable
