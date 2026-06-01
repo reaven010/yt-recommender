@@ -49,6 +49,11 @@ app.include_router(router, prefix="/api")
 async def root():
     return {"message": "Welcome to the YouTube Recommender API. Visit /docs for the API documentation."}
 
+@app.get("/health")
+@app.get("/healthz")
+async def health():
+    return {"status": "healthy"}
+
 if __name__ == "__main__":
     import uvicorn
     import os
